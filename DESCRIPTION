@@ -1,5 +1,5 @@
 Package: actor
-Title: Runs LDA model to align tissue
+Title: Comparisons to a reference panel based on expressed isoform proportions using a latent Dirichlet model
 Version: 0.0.1
 Author: Sean McCabe, Andrew Nobel, Michael I. Love
 Maintainer: Sean McCabe <mccabes@live.unc.edu>
