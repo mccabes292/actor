@@ -1,0 +1,15 @@
+Package: actor
+Title: Runs LDA model to align tissue
+Version: 0.0.1
+Author: Sean McCabe, Andrew Nobel, Michael I. Love
+Maintainer: Sean McCabe <mccabes@live.unc.edu>
+Description: What the package does (one paragraph).
+Depends: R (>= 3.5.0)
+Imports: dplyr, pheatmap,grDevices, matrixStats, readr, magrittr, MCMCpack, usedist
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
