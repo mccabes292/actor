@@ -1,0 +1,94 @@
+---
+title: "ACTOR: A latent dirichlet model to Compare expressed isoform proportions TO a Reference panel"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+author: "Sean D. McCabe, Andrew Nobel, and Michael I. Love"
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    toc_float: true
+abstract: |
+  *actor* compares expressed isoform proportions to a reference panel using a latent Dirichlet model.
+  actor package version: `r packageVersion("actor")`
+
+vignette: |
+  \VignetteEngine{knitr::rmarkdown}
+  \VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+#Outline
+`actor` uses isoform expression from an experimental dataset and compares the splicing patterns to GTEx tissues. `actor` provides a gene level comparison and identifies collections of genes which relate to GTEx in a similar way called gene classes. This vignette provides code for conducting your own analysis as well as how to interpret the results. The data for this vignette is the motor neuron dataset described in the paper and the FASTQ files can be found [here](https://trace.ncbi.nlm.nih.gov/Traces/sra/?study=SRP067645). Note due to speed and size constraints, only a subset of 100 genes were used in this analysis.
+
+#Preparing Data
+`actor` takes in as input the isoform counts from an experimental dataset. Each row of the matrix should be a transcript with the columns corresponding to the samples. The first column should be the gene id and be labled as `gene_id`. The second column should be the transcript id and labeled as `feature_id`. Counts should be scaled to account for read length but still on the same scale of counts. `tximport` can directly calculate this from the salmon files by using the option `countsFromAbundance="scaledTPM"`.
+
+The code below loads the package and prepares the data for modelling. `isoData` is the isoform expression data for the experimental dataset. `reduceTissue=TRUE` reduces the model to only the top 5 relevant tissues. `m1` is the stored model.
+```{r,warning=FALSE}
+library(actor)
+set.seed(1994)
+m1=actor(isoData,reduceTissue = TRUE)
+```
+Users can also modify the model parameters prior to running `actorFit` by changing the values in `m1` as seen below. The number of iterations is set to be 10 and the number of gene classes to identify is set to be 1.
+```{r}
+m1$numIter=10
+m1$numClass=2
+```
+
+The model is then run using the function `actorFit`.
+
+```{r}
+fit1=actorFit(m1)
+```
+
+
+#Interpreting Results
+
+
+Results of the model are stored in the object `fit1`. `actor` also supplies several ways to visualize the results. `dirEta` shows the Dirichlet estimates for the gene classes. This identifies which tissue groups are represented in each of the gene classes. "TissueMem" provides a heatmap of the posterior estimates of the tissue membership where genes are on the columns and the GTEx tissue groups are on the rows. "ClassMem" provides a heatmap of the posterior estimates for the gene class membership with the genes on the columns and the gene classes on the rows.
+```{r}
+fit1$dirEta
+plot(fit1,plotType = "TissueMem")
+plot(fit1,plotType = "ClassMem")
+```
+
+
+#Investigating genes
+Plots can be made to observe the splicing patterns for an individual gene. The original data gets past in as an argument to `isoData` and a list of genes can be passed into `geneList`. This plots can also be subset to a subset of tissues and output to a pdf. Read the documentation for `makeGenePlots` for further information. Note: This plot is useful when the number of samples in the experimental dataset (`isoData`) is relatively small. The more samples present the harder this plot is to read.
+```{r}
+makeGenePlots(actorObj=fit1,isoData=isoData,geneList="ENSG00000108797.7")
+```
+
+
+
+#Pre-specifing the tissues to model
+`actor` can also reduce to a subset of the tissues to consider in the modelling procedure. This is done by specifying the a vector of the tissues in `tissueList`. A list of all available tissues is in `availableTissues`.
+```{r}
+availableTissues()
+```
+
+You can then create a vector of tissues you wish to model and pass it into the `tissueList` parameter and follow the steps for running the model and interpreting the analysis as before.
+```{r,warning=FALSE}
+tissueList=c("Brain_Amygdala","Brain_Cerebellum","Pancreas","Nerve_Tibial","Brain_Spinal_cord_(cervical_c_1)")
+
+
+m2=actor(isoData,reduceTissue = TRUE,tissueList=tissueList)
+```
+
+```{r}
+
+fit2=actorFit(m2)
+m2$numClass=2
+plot(fit1,plotType = "TissueMem")
+plot(fit2,plotType="ClassMem")
+```
+
+
+
+
+

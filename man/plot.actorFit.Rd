@@ -5,7 +5,7 @@
 \title{Create plots for visualization of output}
 \usage{
 \method{plot}{actorFit}(x, plotType, addAnnot = FALSE,
-  annotMat_Col = NULL, annotMat_Row = NULL, fontSize = 20, ...)
+  annotMat_Col = NULL, annotMat_Row = NULL, fontSize = 10, ...)
 }
 \arguments{
 \item{x}{Object of class `actorFit`}

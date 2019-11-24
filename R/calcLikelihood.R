@@ -16,7 +16,7 @@ calcLikelihood=function(isoData,geneExp,minAlpha,minLike,tissueFilterProp,reduce
 
   ##Remove Genes which are not present at all in GTEx
   rowMax=data.frame("gene_id"=mergeSet$gene_id, "feature_id"=mergeSet$feature_id,"rowMax"=apply(mergeSet[,-(1:2)],1,max))
-  maxRowMax=rowMax%>%group_by(gene_id)%>%summarize(max(rowMax))
+  maxRowMax=rowMax%>%group_by(.data$gene_id)%>%summarize(max(rowMax))
   keepGene=maxRowMax[!(maxRowMax[,2]<=minAlpha),1]
   mergeSetFull=mergeSet[mergeSet$gene_id%in%unlist(keepGene),]
   isoData=merge(isoData,mergeSetFull[,1:2],by=c("gene_id","feature_id"),all.y=TRUE)
@@ -45,7 +45,7 @@ calcLikelihood=function(isoData,geneExp,minAlpha,minLike,tissueFilterProp,reduce
   tissueEst[alphaDirSet<=minAlpha]=NA
 
   estVar=data.frame("gene_id"=tissueEst$gene_id,"varRow"=apply(tissueEst[,-(1:2)],1,var,na.rm=TRUE))
-  estVar%>%group_by(gene_id)%>%summarize(varSum=sum(varRow,na.rm=TRUE))->geneVar
+  estVar%>%group_by(.data$gene_id)%>%summarize(varSum=sum(varRow,na.rm=TRUE))->geneVar
   keepGeneFinal=geneVar$gene_id[geneVar$varSum>=0.001]
   tissueEst=tissueEst[tissueEst$gene_id%in%keepGeneFinal,]
   alphaDirSet=alphaDirSet[alphaDirSet$gene_id%in%keepGeneFinal,]
@@ -61,7 +61,7 @@ calcLikelihood=function(isoData,geneExp,minAlpha,minLike,tissueFilterProp,reduce
 
 
 
-  maxAlphaDir=alphaDirSet%>%group_by(gene_id)%>%summarize_at(max,.vars=vars(-feature_id))
+  maxAlphaDir=alphaDirSet%>%group_by(.data$gene_id)%>%summarize_at(max,.vars=vars(-.data$feature_id))
   maxAlphaDir2=data.matrix(maxAlphaDir[,-1])
   rownames(maxAlphaDir2)=maxAlphaDir$gene_id
   colnames(maxAlphaDir2)=colnames(alphaDirSet)[-(1:2)]
@@ -132,7 +132,7 @@ calcLikelihood=function(isoData,geneExp,minAlpha,minLike,tissueFilterProp,reduce
       likeMax=apply(likelihoodSum,1,max)
       estTemp=estTemp[estTemp$gene_id%in%rownames(likelihoodSum),c("gene_id","feature_id",colnames(likelihoodSum))]
       rm=data.frame("gene_id"=estTemp$gene_id,"feature_id"=estTemp$feature_id,"maxVal"=apply(estTemp[,-(1:2)],1,max,na.rm=TRUE),"varRow"=apply(estTemp[,-(1:2)],1,var,na.rm=TRUE))
-      rm%>%group_by(gene_id)%>%summarize("secondVal"=maxVal[order(maxVal,decreasing=TRUE)[2]],"varSum"=sum(varRow,na.rm=TRUE))->secondVal
+      rm%>%group_by(.data$gene_id)%>%summarize("secondVal"=maxVal[order(maxVal,decreasing=TRUE)[2]],"varSum"=sum(varRow,na.rm=TRUE))->secondVal
       secondValKeep=secondVal[secondVal$secondVal>=0.1,]
       varSumKeep=secondValKeep[secondValKeep$varSum>=0.001,]
       likelihoodSum=likelihoodSum[(likeMax>likeFilter*numSamp)&(rownames(likelihoodSum)%in%varSumKeep$gene_id),]
