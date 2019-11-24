@@ -16,4 +16,4 @@ devtools::install_github("mccabes292/actor")
 
 Vignettes
 =========
-A vignette for running your own analysis using `actor` is available [here]((https://htmlpreview.github.io/?https://github.com/mccabes292/actor/tree/master/vignettes/actor.html)
+A vignette for running your own analysis using `actor` is available [here](https://htmlpreview.github.io/?https://github.com/mccabes292/actor/tree/master/vignettes/actor.html)
