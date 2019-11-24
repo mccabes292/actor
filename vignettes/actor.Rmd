@@ -12,8 +12,9 @@ abstract: |
   actor package version: `r packageVersion("actor")`
 
 vignette: |
-  \VignetteEngine{knitr::rmarkdown}
-  \VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{ACTOR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
