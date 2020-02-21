@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 )
 ```
 #Outline
-`actor` uses isoform expression from an experimental dataset and compares the splicing patterns to GTEx tissues. `actor` provides a gene level comparison and identifies collections of genes which relate to GTEx in a similar way called gene classes. This vignette provides code for conducting your own analysis as well as how to interpret the results. The data for this vignette is the motor neuron dataset described in the paper and the FASTQ files can be found [here](https://trace.ncbi.nlm.nih.gov/Traces/sra/?study=SRP067645). Note due to speed and size constraints, only a subset of 100 genes were used in this analysis.
+`actor` uses isoform expression from an experimental dataset and compares the splicing patterns to a reference panel. `actor` provides a gene level comparison and identifies collections of genes which relate to the reference panel in a similar way called gene classes. This vignette provides code for conducting your own analysis as well as how to interpret the results. `actor` provides GTEx as a reference panel with the tissue of origin as the reference group. The data for this vignette is the motor neuron dataset described in the paper and the FASTQ files can be found [here](https://trace.ncbi.nlm.nih.gov/Traces/sra/?study=SRP067645). Note due to speed and size constraints, only a subset of 100 genes were used in this analysis. `actor` also allows for the incorporation of external reference panels. See the last section of this document for information on how this is done.
 
 #Preparing Data
 `actor` takes in as input the isoform counts from an experimental dataset. Each row of the matrix should be a transcript with the columns corresponding to the samples. The first column should be the gene id and be labled as `gene_id`. The second column should be the transcript id and labeled as `feature_id`. Counts should be scaled to account for read length but still on the same scale of counts. `tximport` can directly calculate this from the salmon files by using the option `countsFromAbundance="scaledTPM"`.
@@ -60,15 +60,20 @@ plot(fit1,plotType = "ClassMem")
 
 
 #Investigating genes
-Plots can be made to observe the splicing patterns for an individual gene. The original data gets past in as an argument to `isoData` and a list of genes can be passed into `geneList`. This plots can also be subset to a subset of tissues and output to a pdf. Read the documentation for `makeGenePlots` for further information. Note: This plot is useful when the number of samples in the experimental dataset (`isoData`) is relatively small. The more samples present the harder this plot is to read.
+Plots can be made to observe the splicing patterns for an individual gene. The original data gets past in as an argument to `isoData` and a list of genes can be passed into `geneList`. This plots can also be subset to a subset of tissues and output to a pdf. Read the documentation for `makeGenePlots` for further information. Note: This plot is useful when the number of samples in the experimental dataset (`isoData`) is relatively small. The more samples present the harder this plot is to read. The list of tissues can also be specified through the `tissueList` parameter. Provided tissues must be a supset of the ones within the `actor` object. This can be found using the `availableTissues` function.
 ```{r}
-makeGenePlots(actorObj=fit1,isoData=isoData,geneList="ENSG00000108797.7")
+makeGenePlots(actorObj=fit1,isoData=isoData,geneList="ENSG00000122484.8")
+
+availableTissues(actorObj=fit1)
+
+makeGenePlots(actorObj=fit1,isoData=isoData,geneList="ENSG00000122484.8",tissueList = c("Brain_Amygdala","Brain_Cerebellar_Hemisphere"))
+
 ```
 
 
 
 #Pre-specifing the tissues to model
-`actor` can also reduce to a subset of the tissues to consider in the modelling procedure. This is done by specifying the a vector of the tissues in `tissueList`. A list of all available tissues is in `availableTissues`.
+`actor` can also reduce to a subset of the tissues to consider in the modelling procedure. This is done by specifying the a vector of the tissues in `tissueList`. A list of all available GTEx tissues can be found by running `availableTissues` with no parameters.
 ```{r}
 availableTissues()
 ```
@@ -78,7 +83,7 @@ You can then create a vector of tissues you wish to model and pass it into the `
 tissueList=c("Brain_Amygdala","Brain_Cerebellum","Pancreas","Nerve_Tibial","Brain_Spinal_cord_(cervical_c_1)")
 
 
-m2=actor(isoData,reduceTissue = TRUE,tissueList=tissueList)
+m2=actor(isoData,reduceTissue = FALSE,tissueList=tissueList)
 ```
 
 ```{r}
@@ -88,6 +93,28 @@ m2$numClass=2
 plot(fit1,plotType = "TissueMem")
 plot(fit2,plotType="ClassMem")
 ```
+
+
+
+
+
+##External Reference Panels
+Users can also provide their own reference panels through the parameter `refPanel`.  The first two columns of the dataset must be labeled `gene_id` and `feature_id` respectively and correspond to the gene and transcript labels. Each remaining column of the dataset corresponds to each reference group and the matrix is populated by the precomputed Dirichlet parameters for that reference group. If a gene is not expressed for a specific reference group, `NA` should be entered for all transcripts of that gene. Below is a small portion of the GTEx reference panel. Note that gene ENSG00000000005.5 was not expressed in the adrenal gland and thus the Dirichlet parameters were replaces with `NA` values.  
+
+```{r,echo=FALSE}
+load("C:/Sean/UNC/Mike Love/GTEx/rPackages/actor/R/sysdata.rda")
+ head(gtexRefPanel[,c(1,2,5)])
+```
+
+In the below example, the external reference panel is titled `gtexRefPanel` and all subsequent analyses can be run identically as before.
+
+```{r}
+set.seed(1994)
+m1=actor(isoData,reduceTissue = TRUE,refPanel = gtexRefPanel)
+```
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
+
 
 
 

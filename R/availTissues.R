@@ -1,11 +1,15 @@
-#' Print the available list of GTEx tissues.
+#' Print the available list of GTEx tissues. If no object is provided, the function provides all available GTEx tissues.
 #'
-#'
-#' @return A vector of all available tissues
+#' @param actorObj Output from actor model
+#' @return A vector of all available tissues to plot
 #'
 #' @export
 
-availableTissues=function(){
-  return(colnames(alphaDirSet)[-(1:2)])
+availableTissues=function(actorObj=NULL){
+  if(is.null(actorObj)){
+
+    return(colnames(gtexRefPanel)[-(1:2)])
+  }
+  return(colnames(actorObj$tissuePhi))
 
 }

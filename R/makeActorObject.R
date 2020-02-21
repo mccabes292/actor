@@ -4,6 +4,7 @@
 #' @param countData Sample isoform data. First column should be titled "gene_id" and second "feature_id"
 #' @param reduceTissue TRUE or FALSE indicating whether or not the model should reduce to the top 5 tissues.
 #' @param tissueList List of tissues that will be used for fitting the model. If left NULL all tissues will be used.
+#' @param refPanel Reference panel user can add. Default is GTEx which is provided internally.
 #' @return directorObj - Object to be used for model fitting
 #' @importFrom dplyr group_by summarize summarize_at vars
 #' @importFrom pheatmap pheatmap
@@ -19,7 +20,7 @@
 
 
 
-actor=function(countData,reduceTissue=TRUE,tissueList=NULL){
+actor=function(countData,reduceTissue=TRUE,tissueList=NULL,refPanel=NULL){
   #Value to be plugged in for NA Alpha Values in the DM
   minAlpha=0.00005
   minPhiZero=5e-324
@@ -28,8 +29,15 @@ actor=function(countData,reduceTissue=TRUE,tissueList=NULL){
   if(!all(colnames(countData)[1:2]==c("gene_id","feature_id") )   ){
     stop("First 2 colnames are not labeled 'gene_id','feature_id'")
   }
+  if(is.null(refPanel)){
+    alphaDirSet=gtexRefPanel
+
+  }else{
+    alphaDirSet=refPanel
+  }
+
   message("Filtering Genes")
-  #Load AlphaDirSet
+  #filter down to genes in the reference panel
   isoData=countData[countData$gene_id%in%unique(alphaDirSet$gene_id),]
 
 
@@ -47,7 +55,7 @@ actor=function(countData,reduceTissue=TRUE,tissueList=NULL){
 
 
 
-  likeList=calcLikelihood(isoData=isoData,geneExp=geneExp,minAlpha=minAlpha,minLike = minLike,tissueFilterProp=tissueFilterProp,reduceTissue = reduceTissue,tissueList=tissueList)
+  likeList=calcLikelihood(isoData=isoData,geneExp=geneExp,minAlpha=minAlpha,minLike = minLike,tissueFilterProp=tissueFilterProp,reduceTissue = reduceTissue,tissueList=tissueList,alphaDirSet=alphaDirSet)
   class(likeList)="actor"
   likeList$numIter=10
   likeList$numClass=10

@@ -5,7 +5,7 @@
 \title{Create Gene Level Plots}
 \usage{
 makeGenePlots(actorObj, isoData, geneList, tissueList = NULL,
-  outFile = NULL)
+  outFile = NULL, refPanel = NULL)
 }
 \arguments{
 \item{actorObj}{Output from actor model}
@@ -17,6 +17,8 @@ makeGenePlots(actorObj, isoData, geneList, tissueList = NULL,
 \item{tissueList}{List of tissues to plot. Must be a subset of the tissues used in `actorObj`. If left blank then the columns of `likelihoodSum` from `actorObj` will be used.}
 
 \item{outFile}{PDF file path to write gene plots to. Must end in .pdf.}
+
+\item{refPanel}{Reference panel user can add. Default is GTEx which is provided internally.}
 }
 \description{
 To scale and flip contributions from a cross validation multi-omics analysis in order to be align with the contributions from the full analysis.

@@ -4,7 +4,8 @@
 \alias{actor}
 \title{Create actor Object}
 \usage{
-actor(countData, reduceTissue = TRUE, tissueList = NULL)
+actor(countData, reduceTissue = TRUE, tissueList = NULL,
+  refPanel = NULL)
 }
 \arguments{
 \item{countData}{Sample isoform data. First column should be titled "gene_id" and second "feature_id"}
@@ -12,6 +13,8 @@ actor(countData, reduceTissue = TRUE, tissueList = NULL)
 \item{reduceTissue}{TRUE or FALSE indicating whether or not the model should reduce to the top 5 tissues.}
 
 \item{tissueList}{List of tissues that will be used for fitting the model. If left NULL all tissues will be used.}
+
+\item{refPanel}{Reference panel user can add. Default is GTEx which is provided internally.}
 }
 \value{
 directorObj - Object to be used for model fitting

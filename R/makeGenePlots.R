@@ -6,14 +6,23 @@
 #' @param geneList List of genes to plot.
 #' @param tissueList List of tissues to plot. Must be a subset of the tissues used in `actorObj`. If left blank then the columns of `likelihoodSum` from `actorObj` will be used.
 #' @param outFile PDF file path to write gene plots to. Must end in .pdf.
-#'
+#' @param refPanel Reference panel user can add. Default is GTEx which is provided internally.
 #' @export
 #'
 
 
-makeGenePlots=function(actorObj,isoData,geneList,tissueList=NULL,outFile=NULL){
+makeGenePlots=function(actorObj,isoData,geneList,tissueList=NULL,outFile=NULL,refPanel=NULL){
+  if(is.null(refPanel)){
+    alphaDirSet=gtexRefPanel
+
+  }else{
+    alphaDirSet=refPanel
+  }
   if(is.null(tissueList)){
     tissueList=colnames(actorObj$posteriorEst)
+  }
+  if(!all(tissueList%in%colnames(actorObj$posteriorEst))){
+    stop("tissueList contains tissues which are not contained in the actor object.")
   }
 
   alphaDirSetRed=alphaDirSet[alphaDirSet$gene_id%in%geneList,c("gene_id","feature_id",tissueList)]

@@ -1,6 +1,6 @@
 Package: actor
 Title: A latent dirichlet model to Compare expressed isoform proportions TO a Reference panel
-Version: 0.0.1
+Version: 1.0.0
 Author: Sean McCabe, Andrew Nobel, Michael I. Love
 Maintainer: Sean McCabe <mccabes@live.unc.edu>
 Description: `actor` uses precomputed Dirichlet estimates from GTEx as a reference panel to compare genes to a GTEx tissue based on isoform splicing patterns.

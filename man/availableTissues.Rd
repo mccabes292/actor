@@ -2,13 +2,16 @@
 % Please edit documentation in R/availTissues.R
 \name{availableTissues}
 \alias{availableTissues}
-\title{Print the available list of GTEx tissues.}
+\title{Print the available list of GTEx tissues. If no object is provided, the function provides all available GTEx tissues.}
 \usage{
-availableTissues()
+availableTissues(actorObj = NULL)
+}
+\arguments{
+\item{actorObj}{Output from actor model}
 }
 \value{
-A vector of all available tissues
+A vector of all available tissues to plot
 }
 \description{
-Print the available list of GTEx tissues.
+Print the available list of GTEx tissues. If no object is provided, the function provides all available GTEx tissues.
 }
