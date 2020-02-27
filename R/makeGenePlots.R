@@ -24,6 +24,9 @@ makeGenePlots=function(actorObj,isoData,geneList,tissueList=NULL,outFile=NULL,re
   if(!all(tissueList%in%colnames(actorObj$posteriorEst))){
     stop("tissueList contains tissues which are not contained in the actor object.")
   }
+  if(!all(geneList%in%rownames(actorObj$posteriorEst))){
+    stop("geneList contains genes which are not contained in the actor object.")
+  }
 
   alphaDirSetRed=alphaDirSet[alphaDirSet$gene_id%in%geneList,c("gene_id","feature_id",tissueList)]
   gtexProb=data.frame("gene_id"=alphaDirSetRed$gene_id,"feature_id"=alphaDirSetRed$feature_id,alphaDirSetRed[,-(1:2)]/getGeneExpression(alphaDirSetRed[,-(1:2)],alphaDirSetRed$gene_id))
